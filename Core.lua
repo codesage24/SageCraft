@@ -1,16 +1,12 @@
+SageCraft = SageCraft or {}
 local SC = SageCraft
-local frame = CreateFrame("Frame")
 
-frame:RegisterEvent("PLAYER_LOGIN")
--- frame:RegisterEvent("TRADE_SKILL_SHOW")
--- frame:RegisterEvent("LEARNED_SPELL_IN_TAB")
-
-frame:SetScript("OnEvent", function(_, event)
-    if event == "PLAYER_LOGIN" then
+local f = CreateFrame("Frame")
+f:RegisterEvent("PLAYER_LOGIN")
+f:SetScript("OnEvent", function(self, event, ...)
+    if SC.OnLogin then
         SC:OnLogin()
-    --elseif event == "TRADE_SKILL_SHOW" then
-        --SC:ScanCurrentTradeSkill()
-    --elseif event == "LEARNED_SPELL_IN_TAB" then
-        --SC:ScanCurrentTradeSkill()
+    else
+        SC:Error("|cff88ccffSageCraft:|r OnLogin not defined yet!")
     end
 end)

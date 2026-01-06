@@ -1,3 +1,4 @@
+SageCraft = SageCraft or {}
 local SC = SageCraft
 
 hooksecurefunc("GameTooltip_SetDefaultAnchor", function(tooltip, parent)
@@ -9,19 +10,26 @@ hooksecurefunc("GameTooltip_SetDefaultAnchor", function(tooltip, parent)
     local itemID = tonumber(link:match("item:(%d+)"))
     if not itemID then return end
 
-    local spellID = GetItemSpell(itemID)
-    if not spellID then return end
-
-    for char, charData in pairs(SageCraftDB.characters) do
-        for _, prof in pairs(charData.professions or {}) do
-            if prof.recipes and prof.recipes[spellID] then
-                tooltip:AddLine("|cff00ff00Known by:|r " .. char)
-                tooltip:Show()
-                return
-            end
-        end
+    local itemName, _, _, _, _, itemType, itemSubType, _, _, _, _, itemClassID = GetItemInfo(link)
+    if not itemName then
+        itemName, _, _, _, _, itemType, itemSubType, _, _, _, _, itemClassID = GetItemInfo(itemID)
     end
 
-    tooltip:AddLine("|cffff0000Unknown to all characters|r")
+    local spellName, spellID = GetItemSpell(link)
+    if not spellID then
+        spellName, spellID = GetItemSpell(itemID)
+    end
+
+    local knownChars = SC:CharactersWhoKnowRecipe(spellID, spellName, itemName)
+
+    if #knownChars > 0 then
+        tooltip:AddLine("|cff00ff00Known by:|r " .. table.concat(knownChars, ", "))
+    elseif isRecipeItem then
+        tooltip:AddLine("|cffff0000Unknown to all characters|r")
+    else
+        return
+    end
+
+
     tooltip:Show()
 end)

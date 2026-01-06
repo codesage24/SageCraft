@@ -1,56 +1,47 @@
+SageCraft = SageCraft or {}
 local SC = SageCraft
-
--- WoW class color codes
-local CLASS_COLORS = {
-    ["DRUID"] = "FF7D0A",
-    ["HUNTER"] = "ABD473",
-    ["MAGE"] = "69CCF0",
-    ["PALADIN"] = "F58CBA",
-    ["PRIEST"] = "FFFFFF",
-    ["ROGUE"] = "FFF569",
-    ["SHAMAN"] = "0070DE",
-    ["WARLOCK"] = "9482C9",
-    ["WARRIOR"] = "C79C6E",
-}
-
--- Return class-colored character name
-local function GetColoredCharName(char)
-    local data = SageCraftDB.characters[char]
-    if not data then return char end
-    local color = CLASS_COLORS[data.class] or "FFFFFF"
-    return string.format("|cff%s%s|r", color, char)
-end
-
--- Return table of all characters who know this recipe
-local function CharactersWhoKnowRecipe(spellID)
-    local known = {}
-    for char, charData in pairs(SageCraftDB.characters) do
-        for _, prof in pairs(charData.professions or {}) do
-            if prof.recipes and prof.recipes[spellID] then
-                table.insert(known, GetColoredCharName(char))
-                break
-            end
-        end
-    end
-    return known
-end
 
 GameTooltip:HookScript("OnTooltipSetItem", function(self)
     local _, link = self:GetItem()
-    if not link then return end
+    if not link then
+        return
+    end
 
     local itemID = tonumber(link:match("item:(%d+)"))
-    if not itemID then return end
+    if not itemID then
+        return
+    end
 
-    local spellID = GetItemSpell(itemID)
-    if not spellID then return end
+    local itemName, _, _, _, _, itemType, itemSubType, _, _, _, _, itemClassID = GetItemInfo(link)
+    if not itemName then
+        itemName, _, _, _, _, itemType, itemSubType, _, _, _, _, itemClassID = GetItemInfo(itemID)
+    end
 
-    local knownChars = CharactersWhoKnowRecipe(spellID)
+    local spellName, spellID = GetItemSpell(link)
+    if not spellID then
+        spellName, spellID = GetItemSpell(itemID)
+    end
+
+    if not spellID and not itemName and not spellName then
+        return
+    end
+
+    local recipeClassID = (Enum and Enum.ItemClass and Enum.ItemClass.Recipe) or LE_ITEM_CLASS_RECIPE
+    local isRecipeItem = false
+    if recipeClassID and itemClassID == recipeClassID then
+        isRecipeItem = true
+    elseif itemType == "Recipe" or itemSubType == "Recipe" then
+        isRecipeItem = true
+    end
+
+    local knownChars = SC:CharactersWhoKnowRecipe(spellID, spellName, itemName)
 
     if #knownChars > 0 then
         self:AddLine("|cff00ff00Known by:|r " .. table.concat(knownChars, ", "))
-    else
+    elseif isRecipeItem then
         self:AddLine("|cffff0000Unknown to all characters|r")
+    else
+        return
     end
 
     self:Show()
