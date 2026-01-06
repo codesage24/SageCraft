@@ -1,0 +1,13 @@
+## Interface: 30300
+## Title: SageCraft
+## Notes: Ascension AddOn for Tracking Crafting Professions and Recipes across Characters.
+## Author: CodeSage
+## Version: 0.1.0
+## SavedVariables: SageCraftDB
+
+Database.lua
+Utils.lua
+Core.lua
+Professions.lua
+Tooltip.lua
+LootRoll.lua
