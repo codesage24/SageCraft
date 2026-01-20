@@ -33,7 +33,9 @@ end
 
 -- Debug Logger
 function SC:Debug(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("|cff88ccffSageCraft (Debug):|r " .. msg)
+    if SageCraftDB.Debug == 1 then
+        DEFAULT_CHAT_FRAME:AddMessage("|cff88ccffSageCraft (Debug):|r " .. msg)
+    end
 end
 
 -- Information Logger
@@ -312,6 +314,20 @@ function SC:ShowRecipesWindow()
     UIDropDownMenu_SetWidth(profDrop, 150)
     UIDropDownMenu_SetSelectedValue(profDrop, "ALL")
     UIDropDownMenu_SetText(profDrop, "All Professions")
+
+    -- Debug toggle checkbox
+    local debugCheck = CreateFrame("CheckButton", "SageCraftRecipesDebugCheck", frame, "ChatConfigCheckButtonTemplate")
+    debugCheck:SetPoint("LEFT", frame.title, "RIGHT", 12, 0)
+    local debugLabel = _G[debugCheck:GetName() .. "Text"]
+    if debugLabel then
+        debugLabel:SetText("Debug logging")
+    end
+    debugCheck:SetChecked(SageCraftDB.Debug)
+    debugCheck:SetScript("OnClick", function(selfBtn)
+        local enabled = selfBtn:GetChecked()
+        SageCraftDB.Debug = enabled
+        SC:Info(enabled and "Debug logging enabled." or "Debug logging disabled.")
+    end)
 
     -- Search box (now below the dropdowns)
     local searchBox = CreateFrame("EditBox", nil, frame, "InputBoxTemplate")

@@ -131,7 +131,7 @@ function SC:ScanCurrentTradeSkill()
     -- Debug: Show current profession data
     local recipeCount = 0
     for _ in pairs(profData.recipes) do recipeCount = recipeCount + 1 end
-    SC:Info(string.format("Total recipes stored for %s: %d", profName, recipeCount))
+    SC:Info(string.format("%s Scan Complete: %d New Recipes Added. %d Total Recipes Saved.", profName, added, recipeCount))
 end
 
 -- Find the correct trade skill frame
