@@ -2,7 +2,7 @@
 ## Title: SageCraft
 ## Notes: Ascension AddOn for Tracking Crafting Professions and Recipes across Characters.
 ## Author: CodeSage
-## Version: 0.1.0
+## Version: 0.2.0
 ## SavedVariables: SageCraftDB
 
 Database.lua
